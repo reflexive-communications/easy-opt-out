@@ -185,3 +185,15 @@ function easy_opt_out_civicrm_themes(&$themes)
 //  ));
 //  _easy_opt_out_civix_navigationMenu($menu);
 //}
+
+// The functions below are implemented by me.
+
+/**
+ * Implements hook_civicrm_tokens().
+ */
+function easy_opt_out_civicrm_tokens(&$tokens)
+{
+    $tokens['EasyOptOut'] = [
+        'EasyOptOut.user_opt_out_link' => E::ts('Opt out from Bulk Mailing'),
+    ];
+}
