@@ -28,6 +28,7 @@ class CRM_EasyOptOut_Form_UserEmailOptOut extends CRM_Core_Form
             if (!CRM_Contact_BAO_Contact_Utils::validChecksum($this->cid, $this->checkSum)) {
                 throw new CRM_Core_Exception(ts('Invalid URL'));
             }
+            Civi::resources()->addScriptFile(E::LONG_NAME, "js/Form/autosubmit.js");
         }
         parent::preProcess();
     }
