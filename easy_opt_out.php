@@ -206,8 +206,14 @@ function easy_opt_out_civicrm_tokenValues(&$values, $cids, $job = null, $tokens 
     if (empty($tokens['EasyOptOut'])) {
         return;
     }
-    $link = sprintf("<a href='%s' target='_blank'>%s</a>", 'www.google.com', E::ts('Opt Out'));
     foreach ($cids as $cid) {
+        $urlParams = array(
+            'reset' => 1,
+            'cid'   => $cid,
+            'cs'    => CRM_Contact_BAO_Contact_Utils::generateChecksum($cid),
+        );
+        $url = CRM_Utils_System::url('civicrm/eoo/user-email/opt-out', $urlParams, true, null, true, true);
+        $link = sprintf("<a href='%s' target='_blank'>%s</a>", $url, E::ts('Opt Out'));
         $values[$cid]['EasyOptOut.user_opt_out_link'] = html_entity_decode($link);
     }
 }
