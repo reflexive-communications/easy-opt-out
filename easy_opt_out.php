@@ -3,6 +3,7 @@
 require_once 'easy_opt_out.civix.php';
 // phpcs:disable
 use CRM_EasyOptOut_ExtensionUtil as E;
+
 // phpcs:enable
 
 /**
@@ -10,8 +11,9 @@ use CRM_EasyOptOut_ExtensionUtil as E;
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_config/
  */
-function easy_opt_out_civicrm_config(&$config) {
-  _easy_opt_out_civix_civicrm_config($config);
+function easy_opt_out_civicrm_config(&$config)
+{
+    _easy_opt_out_civix_civicrm_config($config);
 }
 
 /**
@@ -19,8 +21,9 @@ function easy_opt_out_civicrm_config(&$config) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_xmlMenu
  */
-function easy_opt_out_civicrm_xmlMenu(&$files) {
-  _easy_opt_out_civix_civicrm_xmlMenu($files);
+function easy_opt_out_civicrm_xmlMenu(&$files)
+{
+    _easy_opt_out_civix_civicrm_xmlMenu($files);
 }
 
 /**
@@ -28,8 +31,9 @@ function easy_opt_out_civicrm_xmlMenu(&$files) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_install
  */
-function easy_opt_out_civicrm_install() {
-  _easy_opt_out_civix_civicrm_install();
+function easy_opt_out_civicrm_install()
+{
+    _easy_opt_out_civix_civicrm_install();
 }
 
 /**
@@ -37,8 +41,9 @@ function easy_opt_out_civicrm_install() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_postInstall
  */
-function easy_opt_out_civicrm_postInstall() {
-  _easy_opt_out_civix_civicrm_postInstall();
+function easy_opt_out_civicrm_postInstall()
+{
+    _easy_opt_out_civix_civicrm_postInstall();
 }
 
 /**
@@ -46,8 +51,9 @@ function easy_opt_out_civicrm_postInstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_uninstall
  */
-function easy_opt_out_civicrm_uninstall() {
-  _easy_opt_out_civix_civicrm_uninstall();
+function easy_opt_out_civicrm_uninstall()
+{
+    _easy_opt_out_civix_civicrm_uninstall();
 }
 
 /**
@@ -55,8 +61,9 @@ function easy_opt_out_civicrm_uninstall() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_enable
  */
-function easy_opt_out_civicrm_enable() {
-  _easy_opt_out_civix_civicrm_enable();
+function easy_opt_out_civicrm_enable()
+{
+    _easy_opt_out_civix_civicrm_enable();
 }
 
 /**
@@ -64,8 +71,9 @@ function easy_opt_out_civicrm_enable() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_disable
  */
-function easy_opt_out_civicrm_disable() {
-  _easy_opt_out_civix_civicrm_disable();
+function easy_opt_out_civicrm_disable()
+{
+    _easy_opt_out_civix_civicrm_disable();
 }
 
 /**
@@ -73,8 +81,9 @@ function easy_opt_out_civicrm_disable() {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_upgrade
  */
-function easy_opt_out_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
-  return _easy_opt_out_civix_civicrm_upgrade($op, $queue);
+function easy_opt_out_civicrm_upgrade($op, CRM_Queue_Queue $queue = null)
+{
+    return _easy_opt_out_civix_civicrm_upgrade($op, $queue);
 }
 
 /**
@@ -85,8 +94,9 @@ function easy_opt_out_civicrm_upgrade($op, CRM_Queue_Queue $queue = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_managed
  */
-function easy_opt_out_civicrm_managed(&$entities) {
-  _easy_opt_out_civix_civicrm_managed($entities);
+function easy_opt_out_civicrm_managed(&$entities)
+{
+    _easy_opt_out_civix_civicrm_managed($entities);
 }
 
 /**
@@ -98,8 +108,9 @@ function easy_opt_out_civicrm_managed(&$entities) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_caseTypes
  */
-function easy_opt_out_civicrm_caseTypes(&$caseTypes) {
-  _easy_opt_out_civix_civicrm_caseTypes($caseTypes);
+function easy_opt_out_civicrm_caseTypes(&$caseTypes)
+{
+    _easy_opt_out_civix_civicrm_caseTypes($caseTypes);
 }
 
 /**
@@ -112,8 +123,9 @@ function easy_opt_out_civicrm_caseTypes(&$caseTypes) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_angularModules
  */
-function easy_opt_out_civicrm_angularModules(&$angularModules) {
-  _easy_opt_out_civix_civicrm_angularModules($angularModules);
+function easy_opt_out_civicrm_angularModules(&$angularModules)
+{
+    _easy_opt_out_civix_civicrm_angularModules($angularModules);
 }
 
 /**
@@ -121,8 +133,9 @@ function easy_opt_out_civicrm_angularModules(&$angularModules) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_alterSettingsFolders
  */
-function easy_opt_out_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
-  _easy_opt_out_civix_civicrm_alterSettingsFolders($metaDataFolders);
+function easy_opt_out_civicrm_alterSettingsFolders(&$metaDataFolders = null)
+{
+    _easy_opt_out_civix_civicrm_alterSettingsFolders($metaDataFolders);
 }
 
 /**
@@ -132,15 +145,17 @@ function easy_opt_out_civicrm_alterSettingsFolders(&$metaDataFolders = NULL) {
  *
  * @link https://docs.civicrm.org/dev/en/latest/hooks/hook_civicrm_entityTypes
  */
-function easy_opt_out_civicrm_entityTypes(&$entityTypes) {
-  _easy_opt_out_civix_civicrm_entityTypes($entityTypes);
+function easy_opt_out_civicrm_entityTypes(&$entityTypes)
+{
+    _easy_opt_out_civix_civicrm_entityTypes($entityTypes);
 }
 
 /**
  * Implements hook_civicrm_themes().
  */
-function easy_opt_out_civicrm_themes(&$themes) {
-  _easy_opt_out_civix_civicrm_themes($themes);
+function easy_opt_out_civicrm_themes(&$themes)
+{
+    _easy_opt_out_civix_civicrm_themes($themes);
 }
 
 // --- Functions below this ship commented out. Uncomment as required. ---
