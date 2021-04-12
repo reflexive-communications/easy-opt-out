@@ -197,3 +197,17 @@ function easy_opt_out_civicrm_tokens(&$tokens)
         'EasyOptOut.user_opt_out_link' => E::ts('Opt out from Bulk Mailing'),
     ];
 }
+
+/**
+ * implementation of hook_civicrm_tokenValues
+ */
+function easy_opt_out_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null)
+{
+    if (empty($tokens['EasyOptOut'])) {
+        return;
+    }
+    $link = sprintf("<a href='%s' target='_blank'>%s</a>", 'www.google.com', E::ts('Opt Out'));
+    foreach ($cids as $cid) {
+        $values[$cid]['EasyOptOut.user_opt_out_link'] = html_entity_decode($link);
+    }
+}
