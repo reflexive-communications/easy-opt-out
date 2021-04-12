@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<menu>
+  <item>
+    <path>civicrm/eoo/user-email/opt-out</path>
+    <page_callback>CRM_EasyOptOut_Form_UserEmailOptOut</page_callback>
+    <title>UserEmailOptOut</title>
+    <access_arguments>access CiviCRM</access_arguments>
+  </item>
+</menu>
