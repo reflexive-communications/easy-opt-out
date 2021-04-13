@@ -38,13 +38,20 @@ class CRM_EasyOptOut_Form_UserEmailOptOut extends CRM_Core_Form
         // Only hidden inputs supposed to be added here, as it will be submitted with the js.
         $this->add('hidden', 'cid');
         $this->add('hidden', 'checkSum');
-        $this->addButtons([
-            [
-                'type' => 'submit',
-                'name' => E::ts('Save'),
-                'isDefault' => TRUE,
-            ],
-        ]);
+        // Export webhooks to template
+        if (self::isSubmitted()) {
+            $this->assign('message', ts('Done'));
+        } else {
+            $this->addButtons([
+                [
+                    'type' => 'submit',
+                    'name' => E::ts('Save'),
+                    'isDefault' => TRUE,
+                ],
+            ]);
+        }
+
+        $this->setTitle(ts('Webhook Settings'));
         parent::buildQuickForm();
     }
 
