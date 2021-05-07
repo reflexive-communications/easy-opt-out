@@ -46,7 +46,7 @@ class CRM_EasyOptOut_Form_UserEmailOptOut extends CRM_Core_Form
                 [
                     'type' => 'submit',
                     'name' => E::ts('Save'),
-                    'isDefault' => TRUE,
+                    'isDefault' => true,
                 ],
             ]);
         }
