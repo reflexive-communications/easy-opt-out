@@ -194,7 +194,7 @@ function easy_opt_out_civicrm_themes(&$themes)
 function easy_opt_out_civicrm_tokens(&$tokens)
 {
     $tokens['EasyOptOut'] = [
-        'EasyOptOut.user_opt_out_link' => E::ts('Opt out from Bulk Mailing'),
+        'EasyOptOut.user_opt_out_link' => E::ts('Easy Opt out from Bulk Mailing'),
     ];
 }
 
@@ -208,6 +208,23 @@ function easy_opt_out_civicrm_container($container)
         'addListener',
         ['civi.token.eval', 'easy_opt_out_evaluate_tokens']
     );
+    $container->findDefinition('dispatcher')->addMethodCall(
+        'addListener',
+        [\Civi\FlexMailer\Validator::EVENT_CHECK_SENDABLE, 'easy_opt_out_extend_required_tokens', 100]
+    );
+}
+
+function easy_opt_out_extend_required_tokens()
+{
+    // get Tokens from Service
+    $allowedFlexmailerTokens = \Civi::service('civi_flexmailer_required_tokens')->getRequiredTokens();
+    $requiredTokensKey = 'action.optOutUrl or action.unsubscribeUrl';
+    $currentTokens = $allowedFlexmailerTokens[$requiredTokensKey];
+    unset($allowedFlexmailerTokens[$requiredTokensKey]);
+    $currentTokens['EasyOptOut.user_opt_out_link'] = E::ts('Easy Opt out from Bulk Mailing');
+    $allowedFlexmailerTokens[$requiredTokensKey . ' or EasyOptOut'] = $currentTokens;
+    // set Tokens for Service
+    \Civi::service('civi_flexmailer_required_tokens')->setRequiredTokens($allowedFlexmailerTokens);
 }
 
 function easy_opt_out_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e)
@@ -220,9 +237,9 @@ function easy_opt_out_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e)
         ];
         $url = CRM_Utils_System::url('civicrm/eoo/user-email/opt-out', $urlParams, true, null, true, true);
         $row->format('text/html');
-        $row->tokens('EasyOptOut', 'user_opt_out_link', ts("<a href='%1' target='_blank'>Opt Out</a><div>%2</div>", [
+        $row->tokens('EasyOptOut', 'user_opt_out_link', ts("<a href='%1' target='_blank'>Opt Out</a><div name='context'>%2</div>", [
             1 => $url,
-            2 => var_export($row, true),
+            2 => var_export($row->context, true),
         ]));
     }
 }
