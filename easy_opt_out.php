@@ -186,7 +186,7 @@ function easy_opt_out_civicrm_themes(&$themes)
 //  _easy_opt_out_civix_navigationMenu($menu);
 //}
 
-// The functions below are implemented by me.
+// The functions below are implemented by us.
 
 /**
  * Implements hook_civicrm_tokens().
@@ -199,21 +199,30 @@ function easy_opt_out_civicrm_tokens(&$tokens)
 }
 
 /**
- * implementation of hook_civicrm_tokenValues
+ * implementation of hook_civicrm_container
  */
-function easy_opt_out_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null)
+function easy_opt_out_civicrm_container($container)
 {
-    if (empty($tokens['EasyOptOut'])) {
-        return;
-    }
-    foreach ($cids as $cid) {
-        $urlParams = array(
+    $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+    $container->findDefinition('dispatcher')->addMethodCall(
+        'addListener',
+        ['civi.token.eval', 'easy_opt_out_evaluate_tokens']
+    );
+}
+
+function easy_opt_out_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e)
+{
+    foreach ($e->getRows() as $row) {
+        $urlParams = [
             'reset' => 1,
-            'cid'   => $cid,
-            'cs'    => CRM_Contact_BAO_Contact_Utils::generateChecksum($cid),
-        );
+            'cid' => $row->context['contactId'],
+            'cs' => CRM_Contact_BAO_Contact_Utils::generateChecksum($row->context['contactId']),
+        ];
         $url = CRM_Utils_System::url('civicrm/eoo/user-email/opt-out', $urlParams, true, null, true, true);
-        $link = sprintf("<a href='%s' target='_blank'>%s</a>", $url, E::ts('Opt Out'));
-        $values[$cid]['EasyOptOut.user_opt_out_link'] = html_entity_decode($link);
+        $row->format('text/html');
+        $row->tokens('EasyOptOut', 'user_opt_out_link', ts("<a href='%1' target='_blank'>Opt Out</a><div>%2</div>", [
+            1 => $url,
+            2 => var_export($row, true),
+        ]));
     }
 }
