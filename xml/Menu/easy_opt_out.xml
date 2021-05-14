@@ -2,7 +2,7 @@
 <menu>
     <item>
         <path>civicrm/eoo/user-email/opt-out</path>
-        <page_callback>CRM_EasyOptOut_Form_UserEmailOptOut</page_callback>
+        <page_callback>CRM_EasyOptOut_Page_UserEmailOptOut</page_callback>
         <title>User Email Opt Out</title>
         <is_public>true</is_public>
         <access_callback>1</access_callback>
