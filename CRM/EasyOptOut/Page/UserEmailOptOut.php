@@ -24,12 +24,13 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
         }
         // Opt out contact.
         if (self::doOptOut($jobId, $queueId)) {
-            CRM_Mailing_Event_BAO_Unsubscribe::send_unsub_response($queueId, NULL, TRUE, $jobId);
+            CRM_Mailing_Event_BAO_Unsubscribe::send_unsub_response($queueId, null, true, $jobId);
         }
         CRM_Utils_System::setTitle(E::ts('UserEmailOptOut'));
         // Get email to show it to the user on the landing page.
         list($displayName, $email) = CRM_Mailing_Event_BAO_Queue::getContactInfo($queueId);
-        $statusMsg = ts('%1 opt out confirmed.',
+        $statusMsg = ts(
+            '%1 opt out confirmed.',
             [1 => $email]
         );
 
@@ -56,7 +57,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
 
         $shParams = [
             'contact_id' => $contactId,
-            'group_id' => NULL,
+            'group_id' => null,
             'status' => 'Removed',
             'method' => 'Email',
             'tracking' => $ue->id,
