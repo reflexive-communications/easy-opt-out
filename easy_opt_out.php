@@ -234,12 +234,14 @@ function easy_opt_out_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e)
             'reset' => 1,
             'cid' => $row->context['contactId'],
             'cs' => CRM_Contact_BAO_Contact_Utils::generateChecksum($row->context['contactId']),
+            'jid' => $row->context['mailingJobId'],    // The job id.
+            'qid' => $row->context['mailingActionTarget']['id'] ?? NULL,    // The queue id.
+            'h' => $row->context['mailingActionTarget']['hash'] ?? NULL,      // The hash.
         ];
         $url = CRM_Utils_System::url('civicrm/eoo/user-email/opt-out', $urlParams, true, null, true, true);
         $row->format('text/html');
-        $row->tokens('EasyOptOut', 'user_opt_out_link', ts("<a href='%1' target='_blank'>Opt Out</a><div name='context'>%2</div>", [
+        $row->tokens('EasyOptOut', 'user_opt_out_link', ts("<a href='%1' target='_blank'>Opt Out</a>", [
             1 => $url,
-            2 => var_export($row->context, true),
         ]));
     }
 }
