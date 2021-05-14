@@ -11,18 +11,60 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
         if (!CRM_Contact_BAO_Contact_Utils::validChecksum($cid, $checkSum)) {
             throw new CRM_Core_Exception(ts('Invalid URL'));
         }
-        // Opt-out the contact
-        $contactData = [
-            'contact_id' => $cid,
-            'is_opt_out' => 1,
-        ];
-        civicrm_api3('Contact', 'create', $contactData);
-        // Example: Set the page-title dynamically; alternatively, declare a static title in xml/Menu/*.xml
+        $jobId = CRM_Utils_Request::retrieve('jid', 'Int');
+        $queueId = CRM_Utils_Request::retrieve('qid', 'Int');
+        $hash = CRM_Utils_Request::retrieve('h', 'String');
+        if (!$jobId || !$queueId || !$hash) {
+            throw new CRM_Core_Exception(ts("Missing input parameters"));
+        }
+        // verify that the three numbers above match
+        $q = CRM_Mailing_Event_BAO_Queue::verify($jobId, $queueId, $hash);
+        if (!$q) {
+            throw new CRM_Core_Exception(ts("There was an error in your request"));
+        }
+        // Opt out contact.
+        if (self::doOptOut($jobId, $queueId)) {
+            CRM_Mailing_Event_BAO_Unsubscribe::send_unsub_response($queueId, NULL, TRUE, $jobId);
+        }
         CRM_Utils_System::setTitle(E::ts('UserEmailOptOut'));
+        // Get email to show it to the user on the landing page.
+        list($displayName, $email) = CRM_Mailing_Event_BAO_Queue::getContactInfo($queueId);
+        $statusMsg = ts('%1 opt out confirmed.',
+            [1 => $email]
+        );
 
         // Example: Assign a variable for use in a template
-        $this->assign('message', ts('Done'));
+        $this->assign('message', $statusMsg);
 
         parent::run();
+    }
+
+    private static function doOptOut(int $contactId, int $queueId)
+    {
+        $transaction = new CRM_Core_Transaction();
+
+        $contact = new CRM_Contact_BAO_Contact();
+        $contact->id = $contactId;
+        $contact->is_opt_out = true;
+        $contact->save();
+
+        $ue = new CRM_Mailing_Event_BAO_Unsubscribe();
+        $ue->event_queue_id = $queueId;
+        $ue->org_unsubscribe = 1;
+        $ue->time_stamp = $now;
+        $ue->save();
+
+        $shParams = [
+            'contact_id' => $contactId,
+            'group_id' => NULL,
+            'status' => 'Removed',
+            'method' => 'Email',
+            'tracking' => $ue->id,
+        ];
+        CRM_Contact_BAO_SubscriptionHistory::create($shParams);
+
+        $transaction->commit();
+
+        return true;
     }
 }
