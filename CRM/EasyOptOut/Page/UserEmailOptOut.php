@@ -23,7 +23,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
             throw new CRM_Core_Exception(ts("There was an error in your request"));
         }
         // Opt out contact.
-        if (self::doOptOut($jobId, $queueId)) {
+        if (self::doOptOut($cid, $queueId)) {
             CRM_Mailing_Event_BAO_Unsubscribe::send_unsub_response($queueId, null, true, $jobId);
         }
         CRM_Utils_System::setTitle(E::ts('UserEmailOptOut'));
