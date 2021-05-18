@@ -234,8 +234,6 @@ function easy_opt_out_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e)
     foreach ($e->getRows() as $row) {
         $urlParams = [
             'reset' => 1,
-            'cid' => $row->context['contactId'],
-            'cs' => CRM_Contact_BAO_Contact_Utils::generateChecksum($row->context['contactId']),
             'jid' => $row->context['mailingJobId'],    // The job id.
             'qid' => $row->context['mailingActionTarget']['id'] ?? null,    // The queue id.
             'h' => $row->context['mailingActionTarget']['hash'] ?? null,      // The hash.

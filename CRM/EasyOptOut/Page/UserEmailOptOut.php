@@ -6,11 +6,6 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
     public function run()
     {
         // URL validation.
-        $cid = CRM_Utils_Request::retrieve('cid', 'Int');
-        $checkSum = CRM_Utils_Request::retrieve('cs', 'String');
-        if (!CRM_Contact_BAO_Contact_Utils::validChecksum($cid, $checkSum)) {
-            throw new CRM_Core_Exception(ts('Invalid URL'));
-        }
         $jobId = CRM_Utils_Request::retrieve('jid', 'Int');
         $queueId = CRM_Utils_Request::retrieve('qid', 'Int');
         $hash = CRM_Utils_Request::retrieve('h', 'String');
@@ -23,7 +18,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
             throw new CRM_Core_Exception(ts("There was an error in your request"));
         }
         // Opt out contact.
-        if (self::doOptOut($cid, $queueId)) {
+        if (self::doOptOut($q->contact_id, $queueId)) {
             CRM_Mailing_Event_BAO_Unsubscribe::send_unsub_response($queueId, null, true, $jobId);
         }
         CRM_Utils_System::setTitle(E::ts('UserEmailOptOut'));
