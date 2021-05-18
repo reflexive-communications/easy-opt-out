@@ -186,7 +186,7 @@ function easy_opt_out_civicrm_themes(&$themes)
 //  _easy_opt_out_civix_navigationMenu($menu);
 //}
 
-// The functions below are implemented by me.
+// The functions below are implemented by us.
 
 /**
  * Implements hook_civicrm_tokens().
@@ -194,26 +194,55 @@ function easy_opt_out_civicrm_themes(&$themes)
 function easy_opt_out_civicrm_tokens(&$tokens)
 {
     $tokens['EasyOptOut'] = [
-        'EasyOptOut.user_opt_out_link' => E::ts('Opt out from Bulk Mailing'),
+        'EasyOptOut.user_opt_out_url' => E::ts('Easy Opt out from Bulk Mailing (URL)'),
+        'EasyOptOut.user_opt_out_link' => E::ts('Easy Opt out from Bulk Mailing (link)'),
     ];
 }
 
 /**
- * implementation of hook_civicrm_tokenValues
+ * implementation of hook_civicrm_container
  */
-function easy_opt_out_civicrm_tokenValues(&$values, $cids, $job = null, $tokens = array(), $context = null)
+function easy_opt_out_civicrm_container($container)
 {
-    if (empty($tokens['EasyOptOut'])) {
-        return;
-    }
-    foreach ($cids as $cid) {
-        $urlParams = array(
+    $container->addResource(new \Symfony\Component\Config\Resource\FileResource(__FILE__));
+    $container->findDefinition('dispatcher')->addMethodCall(
+        'addListener',
+        ['civi.token.eval', 'easy_opt_out_evaluate_tokens']
+    );
+    $container->findDefinition('dispatcher')->addMethodCall(
+        'addListener',
+        [\Civi\FlexMailer\Validator::EVENT_CHECK_SENDABLE, 'easy_opt_out_extend_required_tokens', 100]
+    );
+}
+
+function easy_opt_out_extend_required_tokens()
+{
+    // get Tokens from Service
+    $allowedFlexmailerTokens = \Civi::service('civi_flexmailer_required_tokens')->getRequiredTokens();
+    $requiredTokensKey = 'action.optOutUrl or action.unsubscribeUrl';
+    $currentTokens = $allowedFlexmailerTokens[$requiredTokensKey];
+    unset($allowedFlexmailerTokens[$requiredTokensKey]);
+    $currentTokens['EasyOptOut.user_opt_out_url'] = E::ts('Easy Opt out from Bulk Mailing (URL)');
+    $currentTokens['EasyOptOut.user_opt_out_link'] = E::ts('Easy Opt out from Bulk Mailing (link)');
+    $allowedFlexmailerTokens[$requiredTokensKey . ' or EasyOptOut'] = $currentTokens;
+    // set Tokens for Service
+    \Civi::service('civi_flexmailer_required_tokens')->setRequiredTokens($allowedFlexmailerTokens);
+}
+
+function easy_opt_out_evaluate_tokens(\Civi\Token\Event\TokenValueEvent $e)
+{
+    foreach ($e->getRows() as $row) {
+        $urlParams = [
             'reset' => 1,
-            'cid'   => $cid,
-            'cs'    => CRM_Contact_BAO_Contact_Utils::generateChecksum($cid),
-        );
+            'jid' => $row->context['mailingJobId'],    // The job id.
+            'qid' => $row->context['mailingActionTarget']['id'] ?? null,    // The queue id.
+            'h' => $row->context['mailingActionTarget']['hash'] ?? null,      // The hash.
+        ];
         $url = CRM_Utils_System::url('civicrm/eoo/user-email/opt-out', $urlParams, true, null, true, true);
-        $link = sprintf("<a href='%s' target='_blank'>%s</a>", $url, E::ts('Opt Out'));
-        $values[$cid]['EasyOptOut.user_opt_out_link'] = html_entity_decode($link);
+        $row->format('text/html');
+        $row->tokens('EasyOptOut', 'user_opt_out_url', $url);
+        $row->tokens('EasyOptOut', 'user_opt_out_link', ts("<a href='%1' target='_blank'>Opt Out</a>", [
+            1 => $url,
+        ]));
     }
 }
