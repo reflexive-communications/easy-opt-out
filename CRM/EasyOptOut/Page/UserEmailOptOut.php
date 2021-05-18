@@ -52,7 +52,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOut extends CRM_Core_Page
         $ue = new CRM_Mailing_Event_BAO_Unsubscribe();
         $ue->event_queue_id = $queueId;
         $ue->org_unsubscribe = 1;
-        $ue->time_stamp = $now;
+        $ue->time_stamp = date('YmdHis');
         $ue->save();
 
         $shParams = [
