@@ -249,7 +249,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
         self::assertSame(0, $result['is_error']);
         self::assertSame(1, count($result['values']), 'Invalid number of email recipients.');
         self::assertTrue(array_key_exists('id', $result), 'Missing id from the MailingRecipients get.');
-        self::assertSame($contactId, intval($result['values'][$result['id']]['contact_id'],10), 'Missing contact from the recipients.');
+        self::assertSame($contactId, intval($result['values'][$result['id']]['contact_id'], 10), 'Missing contact from the recipients.');
         return civicrm_api3('Mailing', 'get', ['id' => $mailingId]);
     }
     public function testMailingSubmitWithoutToken()
@@ -302,7 +302,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
             'id' => $contactId,
         ]);
         $email = $contact['values'][$contactId]['email'];
-        self::assertSame('0',$contact['values'][$contactId]['is_opt_out']);
+        self::assertSame('0', $contact['values'][$contactId]['is_opt_out']);
         $_GET = [
             'jid' => $jobId,
             'qid' => $queueId,
@@ -325,6 +325,6 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
         $contact = civicrm_api3('Contact', 'get', [
             'id' => $contactId,
         ]);
-        self::assertSame('1',$contact['values'][$contactId]['is_opt_out']);
+        self::assertSame('1', $contact['values'][$contactId]['is_opt_out']);
     }
 }
