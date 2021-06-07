@@ -24,13 +24,15 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
     public function setUpHeadless()
     {
         return \Civi\Test::headless()
-      ->installMe(__DIR__)
-      ->apply();
+            ->install('org.civicrm.flexmailer')
+            ->installMe(__DIR__)
+            ->apply();
     }
 
     public function setUp(): void
     {
         parent::setUp();
+        Civi::settings()->add(['flexmailer_traditional' => 'flexmailer']);
     }
 
     public function tearDown(): void
@@ -97,10 +99,10 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
         self::expectExceptionMessage(ts('There was an error in your request'));
         $page->run();
     }
-    private function createGroup(): int
+    private function createGroup(string $title): int
     {
         $result = civicrm_api3('Group', 'create', [
-            'title' => "Test title",
+            'title' => $title,
             'visibility' => "Public Pages",
             'group_type' => "Mailing List",
         ]);
@@ -129,6 +131,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
         $result = civicrm_api3('Email', 'create', [
             'contact_id' => $contactId,
             'email' => 'individual.bob.lastname@email.com',
+            'is_bulkmail' => 1,
         ]);
         self::assertSame(0, $result['is_error']);
         self::assertTrue(array_key_exists('id', $result), 'Missing email id.');
@@ -177,25 +180,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
         self::assertSame(0, $result['is_error']);
         self::assertTrue(array_key_exists('id', $result), 'Missing id from the OptionValue update.');
     }
-    private function processMailing(int $groupId)
-    {
-        $result = civicrm_api3('Mailing', 'create', [
-            'subject' => "email subject",
-            'name' => "email name",
-            'template_type' => "traditional",
-            'body_html' => "<html><head><title>T</title></head><body><div>{EasyOptOut.user_opt_out_url}</div></body></html>",
-            'scheduled_id' => $groupId,
-            'scheduled_date' => "2021-05-20 17:09:16",
-            'group' => ['include' => [$groupId], 'exclude' => []],
-            'approver_id' => $groupId,
-            'approval_date' => "2021-05-20 17:09:16",
-            'approval_status_id' => 1,
-        ]);
-        echo var_export($result, true)."\n";
-        $result = civicrm_api3('Job', 'process_mailing');
-        echo var_export($result, true)."\n";
-    }
-    private function processEmptyMailing(int $groupId, int $contactId)
+    private function processEmptyMailing(int $groupId, int $contactId): int
     {
         $result = civicrm_api3('Mailing', 'create', [
             'subject' => "email subject",
@@ -203,7 +188,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
             'template_type' => "traditional",
             'body_html' => "<div>Token supposed to be here. {domain.address}</div>",
             'body_text' => "Token supposed to be here. {domain.address}",
-            'group' => ['include' => [$groupId], 'exclude' => []],
+            'groups' => ['include' => [$groupId], 'exclude' => []],
             'mailings' => ['include' => [], 'exclude' => []],
             'header_id' => '',
             'footer_id' => '',
@@ -217,7 +202,7 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
             'entity_id' => $mailingId,
             'values' => [],
         ]);
-        echo "Attachment replace: ".var_export($result, true)."\n";
+        self::assertSame(0, $result['is_error']);
         // create logged in user.
         $result = civicrm_api3('UFMatch', 'get', ['uf_id' => 6, 'api.UFMatch.delete' => []]);
         self::assertSame(0, $result['is_error']);
@@ -231,27 +216,115 @@ class CRM_EasyOptOut_Page_UserEmailOptOutTest extends \PHPUnit\Framework\TestCas
         $session = CRM_Core_Session::singleton();
         $session->set('userID', $contactId);
 
-        $result = civicrm_api3('Mailing', 'submit', [
+        return $mailingId;
+    }
+    private function processMailing(int $groupId, int $contactId): array
+    {
+        $result = civicrm_api3('Mailing', 'create', [
+            'subject' => "email subject",
+            'name' => "email name",
+            'template_type' => "traditional",
+            'body_html' => "<div>{EasyOptOut.user_opt_out_url} is here. {domain.address}</div>",
+            'body_text' => "{EasyOptOut.user_opt_out_url} is here. {domain.address}",
+            'groups' => ['include' => [$groupId], 'exclude' => []],
+            'created_at' => 1,
+            'scheduled_date' => 'now',
+            'template_options' => [
+                'nonce' => 1,
+            ],
+        ]);
+        self::assertSame(0, $result['is_error']);
+        self::assertTrue(array_key_exists('id', $result), 'Missing id from the Mailing create.');
+        $mailingId = $result['id'];
+        // attachment replace that could be found in the browser console.
+        $result = civicrm_api3('Attachment', 'replace', [
+            'entity_table' => 'civicrm_mailing',
+            'entity_id' => $mailingId,
+            'values' => [],
+        ]);
+        self::assertSame(0, $result['is_error']);
+        $result = civicrm_api3('MailingRecipients', 'get', [
+            'mailing_id' => $mailingId,
+        ]);
+        self::assertSame(0, $result['is_error']);
+        self::assertSame(1, count($result['values']), 'Invalid number of email recipients.');
+        self::assertTrue(array_key_exists('id', $result), 'Missing id from the MailingRecipients get.');
+        self::assertSame($contactId, intval($result['values'][$result['id']]['contact_id'],10), 'Missing contact from the recipients.');
+        return civicrm_api3('Mailing', 'get', ['id' => $mailingId]);
+    }
+    public function testMailingSubmitWithoutToken()
+    {
+        $_GET = [];
+        $_POST = [];
+        $_REQUEST = [];
+        $this->setupMailing();
+        $groupId = $this->createGroup('MissingToken');
+        $contactId = $this->addNewContactWithEmailToGroup($groupId);
+        $mailingId = $this->processEmptyMailing($groupId, $contactId);
+        self::expectException(CiviCRM_API3_Exception::class);
+        self::expectExceptionMessage('Mailing cannot be sent. There are missing or invalid fields (body_html:action.optOutUrl or action.unsubscribeUrl or EasyOptOut,body_text:action.optOutUrl or action.unsubscribeUrl or EasyOptOut)');
+        civicrm_api3('Mailing', 'submit', [
             'id' => $mailingId,
             'approval_date' => 'now',
             'scheduled_date' => 'now',
         ]);
-        echo var_export($result, true)."\n";
-        $result = civicrm_api3('Job', 'process_mailing');
-        echo var_export($result, true)."\n";
-    }
-    public function testRunDoOptOutWithoutToken()
-    {
-        $this->setupMailing();
-        $groupId = $this->createGroup();
-        $contactId = $this->addNewContactWithEmailToGroup($groupId);
-        $this->processEmptyMailing($groupId, $contactId);
     }
     public function testRunDoOptOut()
     {
-        $groupId = $this->createGroup();
-        //$this->addNewContactWithEmailToGroup($group['id']);
-        //$this->setupMailing();
-        //$this->processMailing($group['id']);
+        $_GET = [];
+        $_POST = [];
+        $_REQUEST = [];
+        Civi::settings()->add([
+            'civimail_multiple_bulk_emails' => 1,
+        ]);
+        $this->setupMailing();
+        $groupId = $this->createGroup('WithToken');
+        $contactId = $this->addNewContactWithEmailToGroup($groupId);
+        $submitData = $this->processMailing($groupId, $contactId);
+        // run the mail sending job
+        $job = civicrm_api3('Job', 'process_mailing', ['runInNonProductionEnvironment' => true]);
+        self::assertSame(0, $job['is_error']);
+        self::assertSame(1, count($job['values']), 'Invalid number of email recipients.');
+        self::assertTrue(array_key_exists('processed', $job['values']), 'Missing processed key.');
+        self::assertSame(1, $job['values']['processed'], 'Invalid number of processed mails.');
+        $result = CRM_Utils_SQL_Select::from('civicrm_mailing_event_queue mec')
+            ->where('mec.contact_id = @cid')
+            ->param(['cid' => $contactId])
+            ->execute()
+            ->fetchAll();
+        // Extract data. As this is the only successfully submitted message, it has to be under the 0 key:
+        $hash = $result[0]['hash'];
+        $jobId = $result[0]['job_id'];
+        $queueId = $result[0]['id'];
+        // Get the email for checking it later in the opt out page.
+        // Also check that the opt-out is fals before the process.
+        $contact = civicrm_api3('Contact', 'get', [
+            'id' => $contactId,
+        ]);
+        $email = $contact['values'][$contactId]['email'];
+        self::assertSame('0',$contact['values'][$contactId]['is_opt_out']);
+        $_GET = [
+            'jid' => $jobId,
+            'qid' => $queueId,
+            'h' => $hash,
+        ];
+        $_POST = [];
+        $_REQUEST = [
+            'jid' => $jobId,
+            'qid' => $queueId,
+            'h' => $hash,
+        ];
+        $page = new CRM_EasyOptOut_Page_UserEmailOptOut();
+        try {
+            self::expectOutputRegex('/'.$email.' opt out confirmed./i');
+            $page->run();
+        } catch (Exception $e) {
+            self::fail('Opt out supposed to be successful.');
+        }
+        // check the contact. opt out flag has to be set.
+        $contact = civicrm_api3('Contact', 'get', [
+            'id' => $contactId,
+        ]);
+        self::assertSame('1',$contact['values'][$contactId]['is_opt_out']);
     }
 }
