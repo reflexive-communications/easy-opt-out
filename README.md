@@ -1,29 +1,21 @@
 # easy-opt-out
 
-![Screenshot](/images/screenshot.png)
-
-(*FIXME: In one or two paragraphs, describe what the extension does and why one would download it. *)
+This extension provides an email token, that is replaced with a link to a page that processes a custom opt-out flow. The token works with Mosaico and with traditional mailer also. It provides the following opt-out flow.
+The token is replaced with a link to the opt-out page. When the page is visited, it validates the query string parameters and in case of successful validation it sets the contact `is_opt_out` flag to 1, that means the user will be excluded from the bulk mailings. After the successful opt-out, the contact email is displayed on the page with success info text.
 
 The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
+**The token in Mosaico**
+![mosaico token](./assets/docs/opt-out-token-mosaico.png)
+
+**The token in traditional**
+![traditional token](./assets/docs/opt-out-token-traditional.png)
+
 ## Requirements
 
-* PHP v7.2+
-* CiviCRM (*FIXME: Version number*)
-
-## Installation (Web UI)
-
-Learn more about installing CiviCRM extensions in the [CiviCRM Sysadmin Guide](https://docs.civicrm.org/sysadmin/en/latest/customize/extensions/).
-
-## Installation (CLI, Zip)
-
-Sysadmins and developers may download the `.zip` file for this extension and
-install it with the command-line tool [cv](https://github.com/civicrm/cv).
-
-```bash
-cd <extension-dir>
-cv dl easy-opt-out@https://github.com/FIXME/easy-opt-out/archive/master.zip
-```
+* PHP v7.3+
+* CiviCRM 5.37.1+
+* FlexMailer
 
 ## Installation (CLI, Git)
 
@@ -31,14 +23,7 @@ Sysadmins and developers may clone the [Git](https://en.wikipedia.org/wiki/Git) 
 install it with the command-line tool [cv](https://github.com/civicrm/cv).
 
 ```bash
-git clone https://github.com/FIXME/easy-opt-out.git
-cv en easy_opt_out
+git clone git@github.com:reflexive-communications/easy-opt-out.git
+cv en easy-opt-out
 ```
 
-## Getting Started
-
-(* FIXME: Where would a new user navigate to get started? What changes would they see? *)
-
-## Known Issues
-
-(* FIXME *)
