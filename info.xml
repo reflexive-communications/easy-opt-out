@@ -1,33 +1,33 @@
 <?xml version="1.0"?>
 <extension key="easy-opt-out" type="module">
-  <file>easy_opt_out</file>
-  <name>FIXME</name>
-  <description>FIXME</description>
-  <license>AGPL-3.0</license>
-  <maintainer>
-    <author>akosgarai</author>
-    <email>szlem01@gmail.com</email>
-  </maintainer>
-  <urls>
-    <url desc="Main Extension Page">http://FIXME</url>
-    <url desc="Documentation">http://FIXME</url>
-    <url desc="Support">http://FIXME</url>
-    <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
-  </urls>
-  <releaseDate>2021-04-12</releaseDate>
-  <version>1.0</version>
-  <develStage>alpha</develStage>
-  <compatibility>
-    <ver>5.0</ver>
-  </compatibility>
-  <requires>
-    <ext>org.civicrm.flexmailer</ext>
-  </requires>
-  <comments>This is a new, undeveloped module</comments>
-  <classloader>
-    <psr4 prefix="Civi\" path="Civi"/>
-  </classloader>
-  <civix>
-    <namespace>CRM/EasyOptOut</namespace>
-  </civix>
+    <file>easy_opt_out</file>
+    <name>Easy opt-out</name>
+    <description>This extension provides an email token, that is replaced with a link to a page that processes a custom opt-out flow.</description>
+    <license>AGPL-3.0</license>
+    <maintainer>
+        <author>akosgarai</author>
+        <email>szlem01@gmail.com</email>
+    </maintainer>
+    <urls>
+        <url desc="Main Extension Page">https://github.com/reflexive-communications/easy-opt-out</url>
+        <url desc="Documentation">https://github.com/reflexive-communications/easy-opt-out</url>
+        <url desc="Support">https://github.com/reflexive-communications/easy-opt-out/issues</url>
+        <url desc="Licensing">http://www.gnu.org/licenses/agpl-3.0.html</url>
+    </urls>
+    <releaseDate>2021-06-07</releaseDate>
+    <version>0.1.0</version>
+    <develStage>alpha</develStage>
+    <compatibility>
+        <ver>5.0</ver>
+    </compatibility>
+    <requires>
+        <ext>org.civicrm.flexmailer</ext>
+    </requires>
+    <comments>This extension provides an email token, that is replaced with a link to a page that processes a custom opt-out flow.</comments>
+    <classloader>
+        <psr4 prefix="Civi\" path="Civi"/>
+    </classloader>
+    <civix>
+        <namespace>CRM/EasyOptOut</namespace>
+    </civix>
 </extension>
