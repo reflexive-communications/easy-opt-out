@@ -15,9 +15,9 @@ The extension is licensed under [AGPL-3.0](LICENSE.txt).
 
 ## Requirements
 
-* PHP v7.3+
-* CiviCRM 5.37.1+
-* FlexMailer
+-   PHP v7.3+
+-   CiviCRM 5.37.1+
+-   FlexMailer
 
 ## Installation (CLI, Git)
 
