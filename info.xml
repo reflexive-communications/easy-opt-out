@@ -4,10 +4,13 @@
     <name>Easy Opt-out</name>
     <description>Provides an email token, that can be used for a simpler opt-out flow</description>
     <license>AGPL-3.0</license>
-    <maintainer>
-        <author>akosgarai</author>
-        <email>szlem01@gmail.com</email>
-    </maintainer>
+    <authors>
+        <author>
+            <name>Sandor Semsey</name>
+            <email>sandor@es-progress.hu</email>
+            <role>Maintainer</role>
+        </author>
+    </authors>
     <urls>
         <url desc="Main Extension Page">https://github.com/reflexive-communications/easy-opt-out</url>
         <url desc="Documentation">https://github.com/reflexive-communications/easy-opt-out</url>
