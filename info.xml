@@ -4,18 +4,21 @@
     <name>Easy Opt-out</name>
     <description>Provides an email token, that can be used for a simpler opt-out flow</description>
     <license>AGPL-3.0</license>
-    <maintainer>
-        <author>akosgarai</author>
-        <email>szlem01@gmail.com</email>
-    </maintainer>
+    <authors>
+        <author>
+            <name>Sandor Semsey</name>
+            <email>sandor@es-progress.hu</email>
+            <role>Maintainer</role>
+        </author>
+    </authors>
     <urls>
         <url desc="Main Extension Page">https://github.com/reflexive-communications/easy-opt-out</url>
         <url desc="Documentation">https://github.com/reflexive-communications/easy-opt-out</url>
         <url desc="Support">https://github.com/reflexive-communications/easy-opt-out/issues</url>
         <url desc="Licensing">https://www.gnu.org/licenses/agpl-3.0.html</url>
     </urls>
-    <releaseDate>2022-09-13</releaseDate>
-    <version>0.1.1</version>
+    <releaseDate>2022-11-06</releaseDate>
+    <version>0.1.2</version>
     <develStage>alpha</develStage>
     <compatibility>
         <ver>5.0</ver>
@@ -24,6 +27,7 @@
         <ext>org.civicrm.flexmailer</ext>
     </requires>
     <classloader>
+        <psr0 prefix="CRM_" path=""/>
         <psr4 prefix="Civi\" path="Civi"/>
     </classloader>
     <civix>
