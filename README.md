@@ -1,5 +1,7 @@
 # easy-opt-out
 
+**THIS REPO IS ARCHIVED!**
+
 [![CI](https://github.com/reflexive-communications/easy-opt-out/actions/workflows/main.yml/badge.svg)](https://github.com/reflexive-communications/easy-opt-out/actions/workflows/main.yml)
 
 This extension provides an email token, that is replaced with a link to a page that processes a custom opt-out flow. The token works with Mosaico and with traditional mailer also. It provides the following opt-out flow.
